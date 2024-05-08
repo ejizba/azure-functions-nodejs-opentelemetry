@@ -27,6 +27,8 @@ registerInstrumentations({
     instrumentations: [getNodeAutoInstrumentations()],
 });
 
+// NOTE: Eventually everything here and below will be included in a new package `@opentelemetry/instrumentation-azure-functions`
+// which will be in `getNodeAutoInstrumentations` by default
 app.hook.preInvocation((context) => {
     context.functionHandler = otelContext.bind(
         propagation.extract(otelContext.active(), {
