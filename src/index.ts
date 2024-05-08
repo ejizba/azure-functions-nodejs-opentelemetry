@@ -1,18 +1,15 @@
 import { LogLevel, app } from '@azure/functions';
 import { context as otelContext, propagation } from '@opentelemetry/api';
 import { SeverityNumber } from '@opentelemetry/api-logs';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
+import { getNodeAutoInstrumentations, getResourceDetectors } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { Resource } from '@opentelemetry/resources';
+import { detectResourcesSync } from '@opentelemetry/resources';
 import { LoggerProvider, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { NodeTracerProvider, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-node';
-import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 
-const resource = new Resource({
-    [SEMRESATTRS_SERVICE_NAME]: process.env.WEBSITE_SITE_NAME,
-});
+const resource = detectResourcesSync({ detectors: getResourceDetectors() });
 
 const tracerProvider = new NodeTracerProvider({ resource });
 tracerProvider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter()));
