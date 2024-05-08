@@ -11,9 +11,10 @@
         "test": "echo \"No tests yet...\""
     },
     "dependencies": {
-        "@azure/functions": "^4.0.0",
+        "@azure/functions": "file:azure-functions-4.4.0.tgz",
         "@opentelemetry/api": "^1.8.0",
         "@opentelemetry/auto-instrumentations-node": "^0.46.0",
+        "@opentelemetry/exporter-logs-otlp-http": "^0.51.1",
         "undici": "^5.0.0"
     },
     "devDependencies": {
