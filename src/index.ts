@@ -2,21 +2,20 @@ import { LogLevel, app } from '@azure/functions';
 import { context as otelContext, propagation } from '@opentelemetry/api';
 import { SeverityNumber } from '@opentelemetry/api-logs';
 import { getNodeAutoInstrumentations, getResourceDetectors } from '@opentelemetry/auto-instrumentations-node';
-import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { detectResourcesSync } from '@opentelemetry/resources';
 import { LoggerProvider, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { NodeTracerProvider, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-node';
+import { AzureMonitorLogExporter, AzureMonitorTraceExporter } from '@azure/monitor-opentelemetry-exporter';
 
 const resource = detectResourcesSync({ detectors: getResourceDetectors() });
 
 const tracerProvider = new NodeTracerProvider({ resource });
-tracerProvider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter()));
+tracerProvider.addSpanProcessor(new SimpleSpanProcessor(new AzureMonitorTraceExporter()));
 tracerProvider.register();
 
 const loggerProvider = new LoggerProvider({ resource });
-loggerProvider.addLogRecordProcessor(new SimpleLogRecordProcessor(new OTLPLogExporter()));
+loggerProvider.addLogRecordProcessor(new SimpleLogRecordProcessor(new AzureMonitorLogExporter()));
 const logger = loggerProvider.getLogger('default');
 
 registerInstrumentations({ tracerProvider, loggerProvider, instrumentations: [getNodeAutoInstrumentations()] });
