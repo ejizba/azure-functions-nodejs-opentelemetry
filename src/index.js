@@ -1,13 +1,13 @@
-import { LogLevel, app } from '@azure/functions';
-import { context as otelContext, propagation } from '@opentelemetry/api';
-import { SeverityNumber } from '@opentelemetry/api-logs';
-import { getNodeAutoInstrumentations, getResourceDetectors } from '@opentelemetry/auto-instrumentations-node';
-import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { detectResourcesSync } from '@opentelemetry/resources';
-import { LoggerProvider, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
-import { NodeTracerProvider, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-node';
+const { app } = require('@azure/functions');
+const { context: otelContext, propagation } = require('@opentelemetry/api');
+const { SeverityNumber } = require('@opentelemetry/api-logs');
+const { getNodeAutoInstrumentations, getResourceDetectors } = require('@opentelemetry/auto-instrumentations-node');
+const { OTLPLogExporter } = require('@opentelemetry/exporter-logs-otlp-http');
+const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
+const { registerInstrumentations } = require('@opentelemetry/instrumentation');
+const { detectResourcesSync } = require('@opentelemetry/resources');
+const { LoggerProvider, SimpleLogRecordProcessor } = require('@opentelemetry/sdk-logs');
+const { NodeTracerProvider, SimpleSpanProcessor } = require('@opentelemetry/sdk-trace-node');
 
 const resource = detectResourcesSync({ detectors: getResourceDetectors() });
 
@@ -44,7 +44,7 @@ app.hook.preInvocation((context) => {
     );
 });
 
-function toOtelSeverityNumber(level: LogLevel): SeverityNumber {
+function toOtelSeverityNumber(level) {
     switch (level) {
         case 'information':
             return SeverityNumber.INFO;
