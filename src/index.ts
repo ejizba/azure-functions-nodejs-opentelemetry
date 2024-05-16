@@ -20,9 +20,8 @@ const logger = loggerProvider.getLogger('default');
 
 registerInstrumentations({ tracerProvider, loggerProvider, instrumentations: [getNodeAutoInstrumentations()] });
 
-// NOTE: The below code in this file is temporary and will eventually be
-// a part of a new package `@opentelemetry/instrumentation-azure-functions`
-// which will be automatically registered with `getNodeAutoInstrumentations`
+// NOTE: The below code will soon be a part of a new package `@opentelemetry/instrumentation-azure-functions`
+// See here for more info: https://github.com/Azure/azure-functions-nodejs-library/issues/245
 app.setup({ capabilities: { WorkerOpenTelemetryEnabled: true } });
 
 app.hook.log((context) => {
