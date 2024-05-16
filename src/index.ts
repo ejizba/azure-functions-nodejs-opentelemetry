@@ -19,13 +19,21 @@ const loggerProvider = new LoggerProvider({ resource });
 loggerProvider.addLogRecordProcessor(new SimpleLogRecordProcessor(new OTLPLogExporter()));
 const logger = loggerProvider.getLogger('default');
 
-registerInstrumentations({
-    tracerProvider,
-    instrumentations: [getNodeAutoInstrumentations()],
+registerInstrumentations({ tracerProvider, loggerProvider, instrumentations: [getNodeAutoInstrumentations()] });
+
+// NOTE: The below code in this file is temporary and will eventually be
+// a part of a new package `@opentelemetry/instrumentation-azure-functions`
+// which will be automatically registered with `getNodeAutoInstrumentations`
+app.setup({ capabilities: { WorkerOpenTelemetryEnabled: true } });
+
+app.hook.log((context) => {
+    logger.emit({
+        body: context.message,
+        severityNumber: toOtelSeverityNumber(context.level),
+        severityText: context.level,
+    });
 });
 
-// NOTE: Eventually everything here and below will be included in a new package `@opentelemetry/instrumentation-azure-functions`
-// which will be in `getNodeAutoInstrumentations` by default
 app.hook.preInvocation((context) => {
     context.functionHandler = otelContext.bind(
         propagation.extract(otelContext.active(), {
@@ -34,20 +42,6 @@ app.hook.preInvocation((context) => {
         }),
         context.functionHandler
     );
-});
-
-app.setup({
-    capabilities: {
-        WorkerOpenTelemetryEnabled: true,
-    },
-});
-
-app.hook.log((context) => {
-    logger.emit({
-        body: context.message,
-        severityNumber: toOtelSeverityNumber(context.level),
-        severityText: context.level,
-    });
 });
 
 function toOtelSeverityNumber(level: LogLevel): SeverityNumber {
