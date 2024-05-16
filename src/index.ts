@@ -17,7 +17,6 @@ tracerProvider.register();
 
 const loggerProvider = new LoggerProvider({ resource });
 loggerProvider.addLogRecordProcessor(new SimpleLogRecordProcessor(new OTLPLogExporter()));
-const logger = loggerProvider.getLogger('default');
 
 registerInstrumentations({ tracerProvider, loggerProvider, instrumentations: [getNodeAutoInstrumentations()] });
 
@@ -25,6 +24,7 @@ registerInstrumentations({ tracerProvider, loggerProvider, instrumentations: [ge
 // See here for more info: https://github.com/Azure/azure-functions-nodejs-library/issues/245
 app.setup({ capabilities: { WorkerOpenTelemetryEnabled: true } });
 
+const logger = loggerProvider.getLogger('default');
 app.hook.log((context) => {
     logger.emit({
         body: context.message,
